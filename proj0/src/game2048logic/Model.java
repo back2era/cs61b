@@ -3,6 +3,7 @@ package game2048logic;
 import game2048rendering.Board;
 import game2048rendering.Side;
 import game2048rendering.Tile;
+import net.sf.saxon.functions.ConstantFunction;
 
 import java.util.Formatter;
 
@@ -85,6 +86,14 @@ public class Model {
      * */
     public boolean emptySpaceExists() {
         // TODO: Task 2. Fill in this function.
+        Board b = getBoard();
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (b.tile(i,j) == null){
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -95,6 +104,18 @@ public class Model {
      */
     public boolean maxTileExists() {
         // TODO: Task 3. Fill in this function.
+        Board b = getBoard();
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (b.tile(i,j) == null){
+                    continue;
+                }else if (b.tile(i,j).value() == MAX_PIECE){
+                    return true;
+
+
+                }
+            }
+        }
         return false;
     }
 
@@ -106,6 +127,28 @@ public class Model {
      */
     public boolean atLeastOneMoveExists() {
         // TODO: Fill in this function.
+        Board b = getBoard();
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (b.tile(i,j) == null){
+                    return true;
+                }
+            }
+        }
+        for (int i = 1; i < 3; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (b.tile(i,j).value() == b.tile(i-1,j).value() | b.tile(i,j).value() == b.tile(i+1,j).value()){
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 1; j < 3; j++) {
+                if (b.tile(i,j).value() == b.tile(i,j-1).value() | b.tile(i,j).value() == b.tile(i,j+1).value()){
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -127,6 +170,22 @@ public class Model {
         Tile currTile = board.tile(x, y);
         int myValue = currTile.value();
         int targetY = y;
+        if (targetY != 3){
+            for (int i = y+1; i < 4; i++) {
+                if (board.tile(x,i) == null){
+                    if (i == 3){
+                        board.move(x,i,currTile);
+                    }
+                } else if (myValue == board.tile(x,i).value() && !board.tile(x,i).wasMerged()) {
+                    board.move(x,i,currTile);
+                    score = score + myValue * 2;
+                    break;
+                } else {
+                    board.move(x,i-1,currTile);
+                }
+            }
+
+        }
 
         // TODO: Tasks 5, 6, and 10. Fill in this function.
     }
@@ -138,10 +197,20 @@ public class Model {
      * */
     public void tiltColumn(int x) {
         // TODO: Task 7. Fill in this function.
+        for (int i = 3; i > -1; i--) {
+            if(board.tile(x,i) != null){
+                moveTileUpAsFarAsPossible(x,i);
+            }
+        }
     }
 
     public void tilt(Side side) {
         // TODO: Tasks 8 and 9. Fill in this function.
+        board.setViewingPerspective(side);
+        for (int i = 0; i < 4; i++) {
+            tiltColumn(i);
+        }
+        board.setViewingPerspective(Side.NORTH);
     }
 
     /** Tilts every column of the board toward SIDE.
