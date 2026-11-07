@@ -1,6 +1,7 @@
 package adventure;
 
 import edu.princeton.cs.algs4.In;
+import net.sf.saxon.functions.Minimax;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -78,10 +79,8 @@ public class MachineStage implements AdventureStage {
     }
 
     public static int mysteryMax(int a, int b) {
-        int w = (b - a) >> 31;
-        int z = ~(b - a) >> 31;
 
-        int max = b & w | a & z;
+        int max = Math.max(a,b);
         return max;
     }
 
@@ -126,7 +125,7 @@ public class MachineStage implements AdventureStage {
         int i = 0;
         int sum = 0;
         while (i < x.length) {
-            sum = sum + mysteryAdd(sum, x[i]);
+            sum = sum + x[i];
             i = i + 1;
         }
         return sum;
